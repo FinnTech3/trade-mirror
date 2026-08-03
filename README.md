@@ -37,8 +37,18 @@ That first row should not be possible. A ratio below 1.0 means importers
 collectively recorded *less* than exporters shipped, before freight is even
 considered, and freight only pushes the number up.
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/ratio-dark.svg">
+  <img alt="Implied CIF/FOB ratio: all pairs at 0.9925, inside the impossible region below 1.00; excluding the Netherlands at 1.0621, inside the expected 1.05 to 1.10 band." src="docs/figures/ratio-light.svg">
+</picture>
+
 Drop one country and it fixes itself. Excluding the Netherlands, the implied
 freight wedge is 1.062 — right where theory says it should sit.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/figures/gaps-dark.svg">
+  <img alt="Mean freight-adjusted gap by exporting country. Netherlands -24.7%, United Kingdom -16.8%, Germany -11.5%, China -3.9%, USA -1.3%, Japan +4.8%, Italy +9.8%." src="docs/figures/gaps-light.svg">
+</picture>
 
 The Netherlands is not mis-reporting. It runs Rotterdam, the largest port in
 Europe, and an enormous volume of goods lands there, clears customs, and moves

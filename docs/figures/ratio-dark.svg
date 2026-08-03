@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="620" height="238" viewBox="0 0 620 238" font-family="system-ui,-apple-system,'Segoe UI',sans-serif" role="img" aria-label="Implied CIF over FOB ratio, with and without the Netherlands">
+<rect width="620" height="238" fill="#1a1a19"/>
+<text x="34" y="30" font-size="15" font-weight="600" fill="#ffffff">Implied CIF/FOB ratio</text>
+<text x="34" y="50" font-size="12" fill="#c3c2b7">Freight can only push this above 1.0 — below it is not possible</text>
+<rect x="34" y="130.0" width="134.5" height="44" fill="#e66767" opacity="0.10"/>
+<text x="101.2" y="120.0" font-size="11" fill="#898781" text-anchor="middle">impossible</text>
+<rect x="345.4" y="130.0" width="176.9" height="44" fill="#3987e5" opacity="0.13"/>
+<text x="433.8" y="120.0" font-size="11" fill="#898781" text-anchor="middle">expected 1.05–1.10</text>
+<line x1="168.5" y1="130.0" x2="168.5" y2="174.0" stroke="#383835" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="168.5" y="190.0" font-size="11" fill="#898781" text-anchor="middle">1.00</text>
+<circle cx="142.0" cy="143.0" r="7" fill="#e66767" stroke="#1a1a19" stroke-width="2"/>
+<text x="142.0" y="100.0" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">0.9925</text>
+<text x="142.0" y="85.0" font-size="11.5" fill="#c3c2b7" text-anchor="middle">all pairs</text>
+<line x1="142.0" y1="106.0" x2="142.0" y2="134.0" stroke="#e66767" stroke-width="1.5"/>
+<circle cx="388.2" cy="161.0" r="7" fill="#3987e5" stroke="#1a1a19" stroke-width="2"/>
+<text x="388.2" y="210.0" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">1.0621</text>
+<text x="388.2" y="226.0" font-size="11.5" fill="#c3c2b7" text-anchor="middle">excluding the Netherlands</text>
+<line x1="388.2" y1="190.0" x2="388.2" y2="170.0" stroke="#3987e5" stroke-width="1.5"/>
+</svg>
