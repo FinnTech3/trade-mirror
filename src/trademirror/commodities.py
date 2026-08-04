@@ -72,6 +72,37 @@ class ChapterGap:
         return names.get(self.chapter, f"HS{self.chapter}")
 
 
+@dataclass(frozen=True, slots=True)
+class Breakdown:
+    """A pair's chapters, and whether they are all of them.
+
+    ``complete`` is the field that matters. A request for every chapter can
+    hit the 500-row cap — the breakdown rows fill it long before the chapter
+    list runs out — and what comes back is then an arbitrary subset with
+    nothing marking it as partial. Shares and ratios computed over a subset
+    are not shares and ratios of the trade, and they look entirely reasonable.
+
+    This caught me out: a first version of this analysis reported mineral
+    fuels as 58% of Dutch exports to Germany. It was 58% of the 32 chapters
+    that happened to survive truncation on the German side. Against the real
+    total it is 32%.
+    """
+
+    gaps: list[ChapterGap]
+    exporter_truncated: bool
+    importer_truncated: bool
+
+    @property
+    def complete(self) -> bool:
+        return not (self.exporter_truncated or self.importer_truncated)
+
+    def __iter__(self):
+        return iter(self.gaps)
+
+    def __len__(self) -> int:
+        return len(self.gaps)
+
+
 def collect_chapters(
     client: Client,
     exporter: int,
@@ -79,13 +110,15 @@ def collect_chapters(
     year: int,
     *,
     minimum_value: float = 2e8,
-) -> list[ChapterGap]:
+) -> Breakdown:
     """Both sides of one country pair, split by HS chapter.
 
     Chapters below ``minimum_value`` on the exporter's side are dropped. Small
     chapters produce enormous percentage gaps from rounding and a single
     reclassified shipment, and letting them into a ranking fills the top of it
     with noise.
+
+    Check :attr:`Breakdown.complete` before quoting anything as a share.
     """
     sent = client.get(
         Query(reporter=exporter, year=year, flow=Flow.EXPORT,
@@ -111,11 +144,41 @@ def collect_chapters(
                 importer_reported=by_importer[chapter],
             )
         )
-    return gaps
+    return Breakdown(
+        gaps=gaps,
+        exporter_truncated=sent.truncated,
+        importer_truncated=received.truncated,
+    )
+
+
+def verify_chapter(
+    client: Client, exporter: int, importer: int, year: int, chapter: str
+) -> ChapterGap | None:
+    """Re-query a single chapter, which never truncates.
+
+    Asking for one chapter returns few enough rows to come back whole, so this
+    is how a headline number gets confirmed once the sweep has found it. Use
+    the sweep to discover, this to quote.
+    """
+    sent = client.get(
+        Query(reporter=exporter, year=year, flow=Flow.EXPORT,
+              commodity=chapter, partner=importer)
+    )
+    received = client.get(
+        Query(reporter=importer, year=year, flow=Flow.IMPORT,
+              commodity=chapter, partner=exporter)
+    )
+    if not sent.flows or not received.flows:
+        return None
+    return ChapterGap(
+        chapter=chapter,
+        exporter_reported=sent.flows[0].value_usd,
+        importer_reported=received.flows[0].value_usd,
+    )
 
 
 def concentration(
-    gaps: list[ChapterGap], chapter: str
+    gaps, chapter: str
 ) -> tuple[float, float, float]:
     """How much one chapter is doing to a pair's overall ratio.
 

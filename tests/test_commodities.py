@@ -16,6 +16,7 @@ from trademirror.commodities import (
     collect_chapters,
     concentration,
     load_chapter_names,
+    verify_chapter,
 )
 from trademirror.comtrade import Client
 
@@ -38,6 +39,26 @@ def client(tmp_path) -> Client:
         ),
         (GERMANY, "M"): json.loads(
             (FIXTURES / "de_imports_from_nl_ag2.json").read_text()
+        ),
+    }
+
+    def fetcher(url: str) -> dict:
+        reporter = int(url.split("reporterCode=")[1].split("&")[0])
+        flow = url.split("flowCode=")[1].split("&")[0]
+        return responses[(reporter, flow)]
+
+    return Client(cache_dir=tmp_path, fetcher=fetcher)
+
+
+@pytest.fixture
+def chapter_client(tmp_path) -> Client:
+    """Serves the single-chapter verification responses."""
+    responses = {
+        (NETHERLANDS, "X"): json.loads(
+            (FIXTURES / "nl_exports_to_de_hs27.json").read_text()
+        ),
+        (GERMANY, "M"): json.loads(
+            (FIXTURES / "de_imports_from_nl_hs27.json").read_text()
         ),
     }
 
@@ -110,21 +131,34 @@ def test_small_chapters_are_dropped(client):
 # ---- the finding --------------------------------------------------------
 
 
-def test_the_dutch_gap_concentrates_in_mineral_fuels(client):
-    """The result that distinguishes transit from sloppy reporting.
+def test_the_breakdown_knows_it_is_incomplete(client):
+    """Regression: shares were once quoted from a truncated subset.
 
-    Clerical error would spread evenly across commodities. A port handling
-    other countries' goods would not — and the gap sits in mineral fuels,
-    which is 58% of what the Dutch report sending to Germany.
+    Asking for every chapter can hit the 500-row cap — breakdown rows fill it
+    long before the chapter list runs out — and the response looks exactly
+    like a complete one. A first version of this analysis reported mineral
+    fuels as 58% of Dutch exports to Germany. It was 58% of the 32 chapters
+    that survived truncation on the German side; against the real total it is
+    32%. Nothing errored, and the number looked entirely reasonable.
     """
-    gaps = collect_chapters(client, NETHERLANDS, GERMANY, 2022)
-    share, with_fuel, without_fuel = concentration(gaps, "27")
-
-    assert share > 0.5, "mineral fuels should dominate the exporter's total"
-    assert with_fuel < 0.75, "the pair's ratio should be badly below 1"
-    assert without_fuel > with_fuel + 0.2, (
-        "removing one chapter should visibly repair the ratio"
+    breakdown = collect_chapters(client, NETHERLANDS, GERMANY, 2022)
+    assert breakdown.importer_truncated, "the German side hit the row cap"
+    assert not breakdown.complete, (
+        "a truncated breakdown must not report itself as complete"
     )
+
+
+def test_a_single_chapter_query_comes_back_whole(chapter_client):
+    """How a headline number gets confirmed: ask for one chapter, not all.
+
+    Sweep to discover, verify to quote.
+    """
+    confirmed = verify_chapter(chapter_client, NETHERLANDS, GERMANY, 2022, "27")
+    assert confirmed is not None
+    assert confirmed.exporter_reported == pytest.approx(60_308_142_050, rel=1e-6)
+    assert confirmed.importer_reported == pytest.approx(24_567_683_524, rel=1e-6)
+    # A third of the trade, and the gap is enormous.
+    assert confirmed.adjusted_gap_pct() < -0.5
 
 
 def test_the_worst_chapters_are_things_a_port_handles(client, names):
