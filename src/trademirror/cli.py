@@ -11,6 +11,7 @@ from pathlib import Path
 
 from .codes import CodeBook
 from .collect import DEFAULT_COUNTRIES, collect_pairs
+from .commodities import collect_chapters, concentration, load_chapter_names
 from .comtrade import Client, http_fetch
 from .mirror import DEFAULT_CIF_FOB_RATIO, summarise
 
@@ -116,6 +117,54 @@ def cmd_transit(args) -> int:
     return 0
 
 
+def cmd_chapters(args) -> int:
+    """Split one pair's gap by what was actually in the containers."""
+    fetcher = _offline if args.offline else polite_fetch
+    client = Client(cache_dir=args.cache, fetcher=fetcher)
+    names = load_chapter_names(REFERENCE / "hs_chapters.json")
+    codes = CodeBook.from_files(
+        REFERENCE / "partnerAreas.json", REFERENCE / "reporters.json"
+    )
+
+    gaps = collect_chapters(client, args.exporter, args.importer, args.year)
+    if not gaps:
+        raise SystemExit(
+            "no chapters both sides reported. Run without --offline once."
+        )
+
+    print(
+        f"{codes.name(args.exporter)} to {codes.name(args.importer)}, "
+        f"{args.year}, by HS chapter\n"
+    )
+    print(f"{'HS':<4}{'commodity':<40}{'sent':>15}{'received':>15}{'gap':>9}")
+    print("-" * 83)
+    ranked = sorted(gaps, key=lambda g: g.adjusted_gap_pct(args.cif_fob) or 0)
+    for gap in ranked[: args.top]:
+        label = gap.name(names)
+        print(
+            f"{gap.chapter:<4}{label[:38]:<40}"
+            f"{gap.exporter_reported / 1e9:>13,.1f}bn"
+            f"{gap.importer_reported / 1e9:>13,.1f}bn"
+            f"{gap.adjusted_gap_pct(args.cif_fob):>+8.1%}"
+        )
+
+    biggest = max(gaps, key=lambda g: g.exporter_reported)
+    share, with_it, without = concentration(gaps, biggest.chapter)
+    print("-" * 83)
+    print(
+        f"\n{biggest.name(names)[:44]} (HS{biggest.chapter}) is "
+        f"{share:.0%} of what the exporter reports sending."
+    )
+    print(f"  ratio across all chapters:     {with_it:.4f}")
+    print(f"  ratio excluding HS{biggest.chapter}:          {without:.4f}")
+    print(
+        "\nA gap spread evenly across everything would look like clerical\n"
+        "error. A gap sitting in the commodities a port handles for other\n"
+        "people looks like goods passing through."
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="trademirror",
@@ -137,6 +186,14 @@ def main(argv: list[str] | None = None) -> int:
         "transit", help="find the countries whose exports nobody records receiving"
     )
     transit.set_defaults(func=cmd_transit)
+
+    chapters = sub.add_parser(
+        "chapters", help="split one pair's gap by commodity"
+    )
+    chapters.add_argument("--exporter", type=int, default=528, help="e.g. 528 NL")
+    chapters.add_argument("--importer", type=int, default=276, help="e.g. 276 DE")
+    chapters.add_argument("--top", type=int, default=10)
+    chapters.set_defaults(func=cmd_chapters)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

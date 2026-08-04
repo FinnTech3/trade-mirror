@@ -63,6 +63,38 @@ This is known in the trade literature as the Rotterdam effect, or quasi-transit
 trade. I did not go looking for it. It fell out of the data as an arithmetic
 impossibility, and working out why is what the project turned into.
 
+### Testing that explanation instead of asserting it
+
+"Goods are passing through" is a story, and the totals cannot tell it apart
+from "the reporting is sloppy". Both produce a gap. They differ in *where* the
+gap sits.
+
+Sloppy reporting does not care what is in the container, so it would spread
+across everything. Transit trade would not — it would concentrate in the
+commodities a port handles on behalf of other countries. So I split the
+Netherlands-to-Germany gap by what was actually traded:
+
+```
+HS  commodity                                 sent    received     gap
+08  Fruit and nuts, edible                    2.5bn       0.6bn  -77.5%
+09  Coffee, tea, mate and spices              0.4bn       0.1bn  -67.8%
+12  Oil seeds and oleaginous fruits           1.3bn       0.5bn  -63.2%
+27  Mineral fuels, mineral oils              60.3bn      24.6bn  -62.3%
+32  Tanning or dyeing extracts                1.3bn       0.7bn  -51.1%
+```
+
+Bananas, coffee, oilseeds and crude oil. The Netherlands grows none of them
+and drills none of them.
+
+Mineral fuels alone are **58%** of what the Dutch report sending to Germany,
+and removing that one chapter moves the pair's ratio from 0.6091 to 0.8875.
+Rotterdam is the largest oil port in Europe, so this is the chapter a transit
+explanation predicts before you look.
+
+It is not proof — a concentrated gap is consistent with transit and does not
+establish it. But it is a test the explanation could have failed and did not,
+which is more than the aggregate figure could offer.
+
 The UK sits second at -16.8%, which I have not explained and am not going to
 pretend I have.
 
@@ -84,6 +116,12 @@ Find the countries whose exports nobody records receiving:
 
 ```sh
 trademirror transit
+```
+
+Split one pair's gap by what was actually in the containers:
+
+```sh
+trademirror chapters --exporter 528 --importer 276
 ```
 
 ```
@@ -195,7 +233,7 @@ gaps concentrate in particular goods — and this does not touch it.
 
 ## Testing
 
-23 tests, all offline. Every one runs against recorded API responses in
+37 tests, all offline. Every one runs against recorded API responses in
 `tests/fixtures`, so the suite needs no network and cannot break because the UN
 revised a number.
 
@@ -208,12 +246,14 @@ plausible wrong answer rather than an error:
 - `mosCode` really is `"0"` and not `0`
 - groups and unknown codes are not treated as countries
 - a truncated response reports itself as truncated
+- the HS reference file parses despite its UTF-8 byte-order mark, which
+  makes a plain `json.loads` fail with a decode error that names no cause
 
 ## What I would do differently
 
-**Break it down by commodity.** All-commodity totals average away the signal.
-The literature finds mirror gaps concentrate in specific goods, and that is
-where anything interesting would be.
+**Break the commodity view out across every pair.** The chapter split runs
+for one country pair at a time. Doing it for all of them would show whether
+the concentration pattern holds generally or is a Rotterdam peculiarity.
 
 **Use a real freight model** instead of one number, or estimate the wedge per
 route from the data and look at deviations from that.
