@@ -21,7 +21,10 @@ from trademirror.comtrade import (
 )
 from trademirror.records import ALL, ALL_CUSTOMS, AggregationFilter, Flow, TradeFlow
 
+from importlib import resources
+
 FIXTURES = Path(__file__).parent / "fixtures"
+REFERENCE = resources.files("trademirror") / "reference"
 
 
 @pytest.fixture(scope="session")
@@ -32,7 +35,7 @@ def uk_exports() -> dict:
 @pytest.fixture(scope="session")
 def codes() -> CodeBook:
     return CodeBook.from_files(
-        FIXTURES / "partnerAreas.json", FIXTURES / "reporters.json"
+        REFERENCE / "partnerAreas.json", REFERENCE / "reporters.json"
     )
 
 
