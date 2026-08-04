@@ -54,7 +54,9 @@ class CodeBook:
 
     @staticmethod
     def _load(path: Path | str, prefix: str) -> dict[int, Area]:
-        payload = json.loads(Path(path).read_text())
+        # Accepts a Traversable as well as a path, so it works whether the
+        # tables are read from the installed package or from a checkout.
+        payload = json.loads(Path(str(path)).read_text(encoding="utf-8-sig"))
         out: dict[int, Area] = {}
         for row in payload.get("results", []):
             code = row.get(f"{prefix}Code")

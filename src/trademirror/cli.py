@@ -7,7 +7,7 @@ import collections
 import sys
 import time
 import urllib.error
-from pathlib import Path
+from importlib import resources
 
 from .codes import CodeBook
 from .collect import DEFAULT_COUNTRIES, collect_pairs
@@ -20,7 +20,12 @@ from .commodities import (
 from .comtrade import Client, http_fetch
 from .mirror import DEFAULT_CIF_FOB_RATIO, summarise
 
-REFERENCE = Path(__file__).resolve().parents[2] / "tests" / "fixtures"
+#: Country and commodity code tables ship inside the package: without them
+#: the tool cannot name anything, so they are part of it rather than test
+#: data. Locating them relative to the repo worked under `pip install -e`
+#: and failed under a plain `pip install`, which is the install the README
+#: did not tell anyone to try.
+REFERENCE = resources.files("trademirror") / "reference"
 
 
 def polite_fetch(url: str) -> dict:

@@ -122,8 +122,13 @@ pretend I have.
 ```sh
 git clone https://github.com/FinnTech3/trade-mirror
 cd trade-mirror
-pip install -e ".[dev]"
+pip install .            # or `pip install -e ".[dev]"` to run the tests
 ```
+
+The country and commodity code tables ship inside the package, so the tool
+names things correctly from anywhere. The response cache is working data
+rather than part of the tool, so it stays in the checkout — `--cache` points
+elsewhere if you want it to.
 
 Rank country pairs by how far apart the two sides are:
 
@@ -269,6 +274,10 @@ plausible wrong answer rather than an error:
   makes a plain `json.loads` fail with a decode error that names no cause
 - a truncated commodity breakdown reports itself as incomplete, so a share
   computed over an arbitrary subset cannot be quoted as a share of the trade
+- CI installs the package **without** `-e` and runs the CLI from `/tmp`.
+  The code tables were located relative to the repository, which an
+  editable install hides entirely, so a plain `pip install` produced a
+  tool that crashed looking for `reporters.json` in site-packages.
 
 ## What I would do differently
 

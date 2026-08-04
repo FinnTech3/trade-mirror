@@ -265,8 +265,8 @@ def main() -> int:
         return 1
 
     codes = CodeBook.from_files(
-        ROOT / "tests" / "fixtures" / "partnerAreas.json",
-        ROOT / "tests" / "fixtures" / "reporters.json",
+        ROOT / "src" / "trademirror" / "reference" / "partnerAreas.json",
+        ROOT / "src" / "trademirror" / "reference" / "reporters.json",
     )
 
     by_exporter: dict[int, list[float]] = {}

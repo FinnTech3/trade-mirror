@@ -37,7 +37,7 @@ def load_chapter_names(path: Path | str) -> dict[str, str]:
     ``json.loads`` fail outright with a decode error rather than anything that
     hints at the cause. Read as ``utf-8-sig`` and it is ordinary JSON.
     """
-    text = Path(path).read_text(encoding="utf-8-sig")
+    text = Path(str(path)).read_text(encoding="utf-8-sig")
     payload = json.loads(text)
     names: dict[str, str] = {}
     for row in payload.get("results", []):

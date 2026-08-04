@@ -31,3 +31,21 @@ jobs:
           python3 scripts/make_figures.py
           git diff --exit-code -- docs/figures/ \
             || (echo "committed figures do not match regenerated output" && exit 1)
+
+  packaged:
+    # A plain `pip install .` — not editable. The code tables live inside the
+    # package now; they used to be found relative to the repo, which only
+    # works while the repo is on disk. An editable install never notices.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install without -e
+        run: pip install .
+      - name: The CLI must find its own reference tables from anywhere
+        working-directory: /tmp
+        run: |
+          trademirror --offline --cache "$GITHUB_WORKSPACE/data/cache" transit
+          trademirror --offline --cache "$GITHUB_WORKSPACE/data/cache" chapters --top 5

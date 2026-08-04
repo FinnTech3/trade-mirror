@@ -20,14 +20,18 @@ from trademirror.commodities import (
 )
 from trademirror.comtrade import Client
 
+from importlib import resources
+
 FIXTURES = Path(__file__).parent / "fixtures"
+#: Shipped with the package, not test data — the tool needs them to run.
+REFERENCE = resources.files("trademirror") / "reference"
 
 NETHERLANDS, GERMANY = 528, 276
 
 
 @pytest.fixture(scope="session")
 def names() -> dict[str, str]:
-    return load_chapter_names(FIXTURES / "hs_chapters.json")
+    return load_chapter_names(REFERENCE / "hs_chapters.json")
 
 
 @pytest.fixture
@@ -85,7 +89,7 @@ def test_chapter_names_load_despite_the_byte_order_mark(names):
 
 def test_plain_utf8_read_would_have_failed():
     """Shows the trap is real rather than theoretical."""
-    raw = (FIXTURES / "hs_chapters.json").read_text(encoding="utf-8")
+    raw = (REFERENCE / "hs_chapters.json").read_text(encoding="utf-8")
     with pytest.raises(json.JSONDecodeError):
         json.loads(raw)
 
