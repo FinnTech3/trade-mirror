@@ -86,14 +86,33 @@ HS  commodity                                 sent    received     gap
 Bananas, coffee, oilseeds and crude oil. The Netherlands grows none of them
 and drills none of them.
 
-Mineral fuels alone are **58%** of what the Dutch report sending to Germany,
-and removing that one chapter moves the pair's ratio from 0.6091 to 0.8875.
+Mineral fuels are the one that matters, because of the size. Confirmed with a
+single-chapter query, which returns complete where the all-chapter request does
+not:
+
+```
+                          exporter reports    importer reports    adjusted
+27  Mineral fuels                  60.3bn              24.6bn      -62.3%
+```
+
+That chapter is **32%** of what the Netherlands reports sending to Germany and
+accounts for **49% of the pair's entire gap** — a third of the trade producing
+half the discrepancy. Removing it moves the pair ratio from 0.608 to 0.703.
 Rotterdam is the largest oil port in Europe, so this is the chapter a transit
 explanation predicts before you look.
 
 It is not proof — a concentrated gap is consistent with transit and does not
 establish it. But it is a test the explanation could have failed and did not,
 which is more than the aggregate figure could offer.
+
+**I got this wrong first.** The original version of this section claimed
+mineral fuels were 58% of Dutch exports to Germany. They are not. A request for
+every chapter hits the same 500-row cap as everything else here, and Germany's
+side came back with 32 of 97 chapters and no indication it was partial. 58% was
+the share *within that subset*. Against the real total it is 32%. `Breakdown`
+now carries a `complete` flag, the tool refuses to quote shares from a
+truncated response, and it re-queries the headline chapter on its own — which
+returns whole — to get a number safe to publish.
 
 The UK sits second at -16.8%, which I have not explained and am not going to
 pretend I have.
@@ -233,7 +252,7 @@ gaps concentrate in particular goods — and this does not touch it.
 
 ## Testing
 
-37 tests, all offline. Every one runs against recorded API responses in
+38 tests, all offline. Every one runs against recorded API responses in
 `tests/fixtures`, so the suite needs no network and cannot break because the UN
 revised a number.
 
@@ -248,6 +267,8 @@ plausible wrong answer rather than an error:
 - a truncated response reports itself as truncated
 - the HS reference file parses despite its UTF-8 byte-order mark, which
   makes a plain `json.loads` fail with a decode error that names no cause
+- a truncated commodity breakdown reports itself as incomplete, so a share
+  computed over an arbitrary subset cannot be quoted as a share of the trade
 
 ## What I would do differently
 

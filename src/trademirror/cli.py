@@ -11,7 +11,12 @@ from pathlib import Path
 
 from .codes import CodeBook
 from .collect import DEFAULT_COUNTRIES, collect_pairs
-from .commodities import collect_chapters, concentration, load_chapter_names
+from .commodities import (
+    collect_chapters,
+    concentration,
+    load_chapter_names,
+    verify_chapter,
+)
 from .comtrade import Client, http_fetch
 from .mirror import DEFAULT_CIF_FOB_RATIO, summarise
 
@@ -126,7 +131,8 @@ def cmd_chapters(args) -> int:
         REFERENCE / "partnerAreas.json", REFERENCE / "reporters.json"
     )
 
-    gaps = collect_chapters(client, args.exporter, args.importer, args.year)
+    breakdown = collect_chapters(client, args.exporter, args.importer, args.year)
+    gaps = breakdown.gaps
     if not gaps:
         raise SystemExit(
             "no chapters both sides reported. Run without --offline once."
@@ -149,8 +155,36 @@ def cmd_chapters(args) -> int:
         )
 
     biggest = max(gaps, key=lambda g: g.exporter_reported)
-    share, with_it, without = concentration(gaps, biggest.chapter)
     print("-" * 83)
+
+    if not breakdown.complete:
+        print(
+            f"\n{len(gaps)} chapters compared, but the response hit the "
+            f"500-row cap, so this is\na subset of the trade and not all of "
+            f"it. Shares computed over a subset are\nnot shares of anything. "
+            f"Re-querying the largest chapter on its own, which\ncomes back "
+            f"whole:"
+        )
+        confirmed = verify_chapter(
+            client, args.exporter, args.importer, args.year, biggest.chapter
+        )
+        if confirmed is None:
+            print("  could not confirm — one side did not report it")
+            return 0
+        print(
+            f"\n  {confirmed.name(names)[:50]} (HS{confirmed.chapter})"
+            f"\n    exporter reports  {confirmed.exporter_reported / 1e9:>10,.1f}bn"
+            f"\n    importer reports  {confirmed.importer_reported / 1e9:>10,.1f}bn"
+            f"\n    freight-adjusted  {confirmed.adjusted_gap_pct(args.cif_fob):>+10.1%}"
+        )
+        print(
+            "\nThat pair of numbers is untruncated and can be quoted. The "
+            "ranking above\nstill shows where the gap sits; only the shares "
+            "are unsafe."
+        )
+        return 0
+
+    share, with_it, without = concentration(gaps, biggest.chapter)
     print(
         f"\n{biggest.name(names)[:44]} (HS{biggest.chapter}) is "
         f"{share:.0%} of what the exporter reports sending."
