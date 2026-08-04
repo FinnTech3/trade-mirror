@@ -1,0 +1,33 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: pytest -q
+      - name: Reproduce the transit finding from the cache
+        # --offline proves the committed cache alone reproduces the published
+        # numbers, with no network call and no dependence on UN revisions.
+        run: trademirror --offline transit
+      - name: Figures regenerate identically
+        # The figures are generated from the cache, so a drift between a
+        # committed chart and the analysis behind it fails here.
+        run: |
+          python3 scripts/make_figures.py
+          git diff --exit-code -- docs/figures/ \
+            || (echo "committed figures do not match regenerated output" && exit 1)

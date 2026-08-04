@@ -1,5 +1,7 @@
 # trade-mirror
 
+[![tests](https://github.com/FinnTech3/trade-mirror/actions/workflows/ci.yml/badge.svg)](https://github.com/FinnTech3/trade-mirror/actions/workflows/ci.yml)
+
 Every international trade gets counted twice — once by the country selling and
 once by the country buying. This compares the two numbers and asks why they
 disagree.
