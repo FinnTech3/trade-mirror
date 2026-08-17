@@ -174,7 +174,7 @@ def cmd_chapters(args) -> int:
             client, args.exporter, args.importer, args.year, biggest.chapter
         )
         if confirmed is None:
-            print("  could not confirm — one side did not report it")
+            print("  could not confirm, one side did not report it")
             return 0
         print(
             f"\n  {confirmed.name(names)[:50]} (HS{confirmed.chapter})"

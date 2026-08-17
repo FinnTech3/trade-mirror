@@ -16,7 +16,7 @@ reimplementation
 clone
   List every copied file or directory and its origin, and confirm the original
   LICENSE is present in this repo:
-  - src/parser/ — copied from <source> @ <commit>, MIT, LICENSE-upstream retained.
+  - src/parser/, copied from <source> @ <commit>, MIT, LICENSE-upstream retained.
 
 research
   Cite the paper and list which figures, tables, or datasets are reproduced:

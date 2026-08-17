@@ -1,6 +1,6 @@
 """Comparing what one country says it sent with what the other says it got.
 
-Every trade between two countries gets reported twice — once by the exporter,
+Every trade between two countries gets reported twice, once by the exporter,
 once by the importer. The two numbers never agree. The difference is called
 the mirror gap, and it is one of the few places in economics where you get an
 error term you can actually look at.
@@ -16,7 +16,7 @@ around 6 to 10 percent of value, wider for bulky goods and long routes.
 
 Skip this adjustment and every pair on earth looks like it is under-reporting
 exports, because you have measured freight and called it fraud. What is worth
-investigating is the residual once the expected wedge is taken out — and
+investigating is the residual once the expected wedge is taken out, and
 especially gaps that run the *wrong* way, where the exporter reports more than
 the importer received.
 """
@@ -97,7 +97,7 @@ def pair_flows(
     """Match each export flow with the import flow that should mirror it.
 
     Only pairs where both sides reported are returned. A flow with no
-    counterpart is not evidence of a zero on the other side — far more often
+    counterpart is not evidence of a zero on the other side, far more often
     it means that country did not report that year at all, and silently
     treating absence as zero would manufacture a 100% gap.
     """

@@ -1,7 +1,7 @@
 # Design notes
 
 Working understanding of the target, written in my own words. Filled in before
-implementation starts — if the design cannot be described here without the
+implementation starts, if the design cannot be described here without the
 original open, it is not understood yet.
 
 ## What it does

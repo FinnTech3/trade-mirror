@@ -2,8 +2,8 @@
 
 The preview endpoint caps every response at 500 rows and gives no sign when
 it has truncated. Asking for one reporter's trade with *all* partners returns
-an arbitrary slice of them — the breakdown rows eat the budget long before the
-partner list is exhausted — so the two halves of a mirror almost never arrive
+an arbitrary slice of them, the breakdown rows eat the budget long before the
+partner list is exhausted, so the two halves of a mirror almost never arrive
 in the same pair of responses.
 
 The way around it is to name both countries in every query. That costs two

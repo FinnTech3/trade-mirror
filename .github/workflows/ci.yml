@@ -33,7 +33,7 @@ jobs:
             || (echo "committed figures do not match regenerated output" && exit 1)
 
   packaged:
-    # A plain `pip install .` — not editable. The code tables live inside the
+    # A plain `pip install .`, not editable. The code tables live inside the
     # package now; they used to be found relative to the repo, which only
     # works while the repo is on disk. An editable install never notices.
     runs-on: ubuntu-latest

@@ -245,7 +245,7 @@ def _row(*, partner: int, value: float | None) -> dict:
 def test_customs_procedure_is_the_third_aggregation_level():
     """Regression: filtering transport and second-partner is not enough.
 
-    Comtrade also splits the same trade across customs procedures — C00 is
+    Comtrade also splits the same trade across customs procedures, C00 is
     every procedure combined, and C01/C03/C04/C06/C07/C20 sum to it. Missing
     this left six rows for a single country pair, and picking among them
     arbitrarily produced a 94% "discrepancy" that was purely an artefact.
