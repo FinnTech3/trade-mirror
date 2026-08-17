@@ -4,9 +4,9 @@ The aggregate gap says the Netherlands reports sending far more than its
 partners report receiving. It does not say what. That matters, because the two
 explanations look identical in the totals and completely different here:
 
-- If goods are **transiting** — landing at Rotterdam, clearing customs and
+- If goods are **transiting**, landing at Rotterdam, clearing customs and
   moving on under a Dutch export declaration while the buyer records the
-  country the goods were made in — the gap should sit in the commodities a
+  country the goods were made in, the gap should sit in the commodities a
   port handles for other people. Crude oil. Coffee. Bananas.
 - If the reporting were simply **sloppy**, the gap would be spread more or less
   evenly across everything, because clerical error does not care what is in
@@ -45,7 +45,7 @@ def load_chapter_names(path: Path | str) -> dict[str, str]:
         if len(code) != 2 or not code.isdigit():
             continue
         label = str(row.get("text", code))
-        # Entries arrive as "27 - Mineral fuels, ..." — drop the repeated code.
+        # Entries arrive as "27 - Mineral fuels, ...", drop the repeated code.
         if label.startswith(f"{code} - "):
             label = label[len(code) + 3:]
         names[code] = label
@@ -77,8 +77,8 @@ class Breakdown:
     """A pair's chapters, and whether they are all of them.
 
     ``complete`` is the field that matters. A request for every chapter can
-    hit the 500-row cap — the breakdown rows fill it long before the chapter
-    list runs out — and what comes back is then an arbitrary subset with
+    hit the 500-row cap, the breakdown rows fill it long before the chapter
+    list runs out, and what comes back is then an arbitrary subset with
     nothing marking it as partial. Shares and ratios computed over a subset
     are not shares and ratios of the trade, and they look entirely reasonable.
 

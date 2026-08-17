@@ -192,7 +192,7 @@ def ratio_chart(all_pairs: float, without_nl: float, theme: Theme) -> str:
         f'<text x="{left}" y="30" font-size="15" font-weight="600" '
         f'fill="{theme.text_primary}">Implied CIF/FOB ratio</text>',
         f'<text x="{left}" y="50" font-size="12" fill="{theme.text_secondary}">'
-        f'Freight can only push this above 1.0 — below it is not possible</text>',
+        f'Freight can only push this above 1.0, below it is not possible</text>',
         # The region no honest figure can reach.
         f'<rect x="{left}" y="{top:.1f}" width="{x(1.0) - left:.1f}" '
         f'height="{track_h}" fill="{theme.negative}" opacity="0.10"/>',
@@ -205,7 +205,7 @@ def ratio_chart(all_pairs: float, without_nl: float, theme: Theme) -> str:
         f'fill="{theme.positive}" opacity="0.13"/>',
         f'<text x="{(x(1.05) + x(1.10)) / 2:.1f}" y="{top - 10:.1f}" '
         f'font-size="11" fill="{theme.muted}" text-anchor="middle">'
-        f'expected 1.05–1.10</text>',
+        f'expected 1.05 to 1.10</text>',
         f'<line x1="{x(1.0):.1f}" y1="{top:.1f}" x2="{x(1.0):.1f}" '
         f'y2="{top + track_h:.1f}" stroke="{theme.baseline}" '
         f'stroke-width="2" stroke-dasharray="4 3"/>',

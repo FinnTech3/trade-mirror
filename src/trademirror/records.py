@@ -42,7 +42,7 @@ class TradeFlow:
 
     ``value_usd`` is the reported value in current US dollars. Comtrade calls
     it ``primaryValue``, which is the FOB value for exports and generally the
-    CIF value for imports — a difference that matters enormously here and is
+    CIF value for imports, a difference that matters enormously here and is
     discussed in :mod:`trademirror.mirror`.
     """
 

@@ -23,7 +23,7 @@ from trademirror.comtrade import Client
 from importlib import resources
 
 FIXTURES = Path(__file__).parent / "fixtures"
-#: Shipped with the package, not test data — the tool needs them to run.
+#: Shipped with the package, not test data, the tool needs them to run.
 REFERENCE = resources.files("trademirror") / "reference"
 
 NETHERLANDS, GERMANY = 528, 276
@@ -138,8 +138,8 @@ def test_small_chapters_are_dropped(client):
 def test_the_breakdown_knows_it_is_incomplete(client):
     """Regression: shares were once quoted from a truncated subset.
 
-    Asking for every chapter can hit the 500-row cap — breakdown rows fill it
-    long before the chapter list runs out — and the response looks exactly
+    Asking for every chapter can hit the 500-row cap, breakdown rows fill it
+    long before the chapter list runs out, and the response looks exactly
     like a complete one. A first version of this analysis reported mineral
     fuels as 58% of Dutch exports to Germany. It was 58% of the 32 chapters
     that survived truncation on the German side; against the real total it is
@@ -166,7 +166,7 @@ def test_a_single_chapter_query_comes_back_whole(chapter_client):
 
 
 def test_the_worst_chapters_are_things_a_port_handles(client, names):
-    """Fruit, coffee, oilseeds, fuels — none of them grown or drilled locally."""
+    """Fruit, coffee, oilseeds, fuels, none of them grown or drilled locally."""
     gaps = collect_chapters(client, NETHERLANDS, GERMANY, 2022)
     ranked = sorted(gaps, key=lambda g: g.adjusted_gap_pct() or 0)
     worst = {g.chapter for g in ranked[:5]}

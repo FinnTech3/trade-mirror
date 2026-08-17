@@ -1,6 +1,6 @@
 """Turning Comtrade's numeric codes into countries.
 
-The data rows carry codes and nothing else — every ``reporterDesc`` and
+The data rows carry codes and nothing else, every ``reporterDesc`` and
 ``partnerDesc`` field in a preview response comes back ``None``, so names have
 to be joined in from separate reference tables.
 

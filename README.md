@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/FinnTech3/trade-mirror/actions/workflows/ci.yml/badge.svg)](https://github.com/FinnTech3/trade-mirror/actions/workflows/ci.yml)
 
-Every international trade gets counted twice — once by the country selling and
+Every international trade gets counted twice, once by the country selling and
 once by the country buying. This compares the two numbers and asks why they
 disagree.
 
@@ -45,7 +45,7 @@ considered, and freight only pushes the number up.
 </picture>
 
 Drop one country and it fixes itself. Excluding the Netherlands, the implied
-freight wedge is 1.062 — right where theory says it should sit.
+freight wedge is 1.062, right where theory says it should sit.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/figures/gaps-dark.svg">
@@ -70,7 +70,7 @@ from "the reporting is sloppy". Both produce a gap. They differ in *where* the
 gap sits.
 
 Sloppy reporting does not care what is in the container, so it would spread
-across everything. Transit trade would not — it would concentrate in the
+across everything. Transit trade would not: it would concentrate in the
 commodities a port handles on behalf of other countries. So I split the
 Netherlands-to-Germany gap by what was actually traded:
 
@@ -96,12 +96,12 @@ not:
 ```
 
 That chapter is **32%** of what the Netherlands reports sending to Germany and
-accounts for **49% of the pair's entire gap** — a third of the trade producing
+accounts for **49% of the pair's entire gap**, a third of the trade producing
 half the discrepancy. Removing it moves the pair ratio from 0.608 to 0.703.
 Rotterdam is the largest oil port in Europe, so this is the chapter a transit
 explanation predicts before you look.
 
-It is not proof — a concentrated gap is consistent with transit and does not
+It is not proof. A concentrated gap is consistent with transit and does not
 establish it. But it is a test the explanation could have failed and did not,
 which is more than the aggregate figure could offer.
 
@@ -111,8 +111,8 @@ every chapter hits the same 500-row cap as everything else here, and Germany's
 side came back with 32 of 97 chapters and no indication it was partial. 58% was
 the share *within that subset*. Against the real total it is 32%. `Breakdown`
 now carries a `complete` flag, the tool refuses to quote shares from a
-truncated response, and it re-queries the headline chapter on its own — which
-returns whole — to get a number safe to publish.
+truncated response, and it re-queries the headline chapter on its own, which
+returns whole, to get a number safe to publish.
 
 The UK sits second at -16.8%, which I have not explained and am not going to
 pretend I have.
@@ -127,7 +127,7 @@ pip install .            # or `pip install -e ".[dev]"` to run the tests
 
 The country and commodity code tables ship inside the package, so the tool
 names things correctly from anywhere. The response cache is working data
-rather than part of the tool, so it stays in the checkout — `--cache` points
+rather than part of the tool, so it stays in the checkout, `--cache` points
 elsewhere if you want it to.
 
 Rank country pairs by how far apart the two sides are:
@@ -174,7 +174,7 @@ This is most of the work, and none of it shows up in the output.
 
 A single Comtrade response contains the same goods counted more than once. The
 trade is broken down by mode of transport, and separately by second partner,
-and separately by customs procedure — *and* the total of each breakdown comes
+and separately by customs procedure, *and* the total of each breakdown comes
 back alongside the breakdown itself. Nothing on a row says whether it is a total
 or a part.
 
@@ -193,7 +193,7 @@ because it is the only one written as a string (`C00` for all procedures, with
 `C01`, `C03`, `C04`, `C06`, `C07` and `C20` summing to it). Filtering the other
 two still left six rows for a single country pair. Picking among them
 arbitrarily gave me Italy exporting $81.6bn to Germany while Germany recorded
-$5.2bn — a 94% discrepancy I briefly believed was a finding, and which was
+$5.2bn, a 94% discrepancy I briefly believed was a finding, and which was
 entirely my own bug.
 
 A test checks that the six breakdown rows sum exactly to the total, because that
@@ -202,7 +202,7 @@ is what proves they are parts rather than separate trade.
 ### Numbers arrive as strings
 
 `period` comes back as `"2022"`. It prints as a number, it reads as a number,
-and it compares unequal to `2022`. Left alone it does not crash — any grouping
+and it compares unequal to `2022`. Left alone it does not crash: any grouping
 by year quietly matches nothing. `mosCode` does the same with `"0"`, and cost me
 a filter that silently discarded every row in the dataset.
 
@@ -218,7 +218,7 @@ have compared a thing with a set containing it.
 ### The endpoint truncates without saying so
 
 The public preview API returns at most 500 rows and gives no sign when it has
-cut you off — a truncated response is shaped exactly like a complete one. Worse,
+cut you off: a truncated response is shaped exactly like a complete one. Worse,
 asking for one country's trade with *all* partners spends those 500 rows on
 breakdowns long before the partner list runs out, so what you get is an
 arbitrary slice. My first attempt found **zero** mirror pairs for exactly this
@@ -240,7 +240,7 @@ pairs I trust than 56 I do not.
 
 **The freight adjustment is a single global constant**, 1.08. This is the
 weakest thing in the project. The real wedge varies by route, by commodity and
-by year — bulk goods over long distances cost far more to ship as a share of
+by year, bulk goods over long distances cost far more to ship as a share of
 value than electronics over short ones. A constant is defensible for ranking
 pairs against each other and indefensible for saying anything precise about one
 pair. The `--cif-fob` flag exists so the assumption can be moved and the
@@ -252,8 +252,8 @@ give different answers for reasons that have nothing to do with the code.
 
 **Eight countries, one year, all commodities.** Each additional country costs 2n
 more requests against a free public service that rate-limits at roughly one
-request per second. The commodity dimension is where the interesting work is —
-gaps concentrate in particular goods — and this does not touch it.
+request per second. The commodity dimension is where the interesting work is,
+gaps concentrate in particular goods, and this does not touch it.
 
 ## Testing
 

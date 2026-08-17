@@ -1,7 +1,7 @@
 """Reading trade data out of UN Comtrade.
 
 Uses the public preview endpoint, which needs no API key. That comes with a
-hard cap of 500 rows per response and no warning when you hit it — the
+hard cap of 500 rows per response and no warning when you hit it, the
 response looks exactly like a complete one. :func:`parse_response` therefore
 reports truncation rather than letting a partial answer pass as a whole one.
 """
@@ -92,7 +92,7 @@ def parse_response(
                 # Types are coerced here rather than trusted. Comtrade sends
                 # `period` as a string that looks like a number, so a year
                 # read straight from the payload compares unequal to the int
-                # it appears to be — and does so silently, only surfacing much
+                # it appears to be, and does so silently, only surfacing much
                 # later as a grouping that mysteriously finds no matches.
                 reporter=int(row["reporterCode"]),
                 partner=int(row["partnerCode"]),
@@ -120,7 +120,7 @@ def require_single_flow(response: Response, query: Query) -> TradeFlow:
     anything else means the response cannot be trusted. The dangerous case is
     a truncated response that happens to contain no aggregate row: the payload
     looks ordinary, the filter legitimately keeps nothing, and a caller
-    reading `flows[0]` would either crash or — worse, if it defaulted — record
+    reading `flows[0]` would either crash or, worse, if it defaulted, record
     a zero and later read that zero as a country reporting no trade at all.
     """
     if len(response.flows) == 1:
